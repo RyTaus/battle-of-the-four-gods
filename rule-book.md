@@ -61,7 +61,7 @@ A player wins the game if at the end of a round every other player is eliminated
 
 In the case that at the end of a round every player has been eliminated, then the winner is the player with the largest amount of ENERGY POINTS that was eliminated during that round. If multiple players eliminated that round have the same amount of energy points then the game is a tie between those players.
 
-### Terms
+## Terms
 
 #### Actions
 Each player has access to 6 actions.

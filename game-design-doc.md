@@ -18,6 +18,9 @@ Battle of The Four Gods
 ### 1.3 Elevator Pitch
 4 players assume the roles of gods and their struggles against each other. Each round players expend energy points to either attack or defend against each of the other players. Upon reaching 0 energy points a player loses. Last player standing wins.
 
+### 1.4 Target Audience
+The game is designed for family and friends who want to play a competitive board game. This game utilizes deceit and teaming up, so it is recommended for players who want a challenge, but don't take actions in game personally.
+
 ## 2 Concept
 
 ### 2.1 Story
