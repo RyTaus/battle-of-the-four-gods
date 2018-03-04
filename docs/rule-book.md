@@ -63,7 +63,7 @@ In the case that at the end of a round every player has been eliminated, then th
 
 ## Terms
 
-#### Actions
+### Actions
 Each player has access to 6 actions.
   * 3 ATTACK actions (1 for each opponent color) (Indicates the target)
   * 3 DEFENSE actions (1 for each opponent color) (Indicates the opponent defending from)

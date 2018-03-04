@@ -1,0 +1,26 @@
+{
+  "name": "battle-of-the-four-gods",
+  "version": "0.1.0",
+  "description": "simple online multiplayer game",
+  "main": "src/index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RyTaus/battle-of-the-four-gods.git"
+  },
+  "author": "RyTaus",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RyTaus/battle-of-the-four-gods/issues"
+  },
+  "homepage": "https://github.com/RyTaus/battle-of-the-four-gods#readme",
+  "dependencies": {
+    "express": "^4.16.2",
+    "socket.io": "^2.0.4"
+  }
+}
