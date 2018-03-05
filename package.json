@@ -2,7 +2,7 @@
   "name": "battle-of-the-four-gods",
   "version": "0.1.0",
   "description": "simple online multiplayer game",
-  "main": "src/index.js",
+  "main": "index.js",
   "directories": {
     "doc": "docs"
   },

@@ -12,6 +12,11 @@ class Player {
     return this;
   }
 
+  assignID (socket) {
+    // this.socket = socket;
+    this.id = socket.id;
+  }
+
   newRound () {
     this.currentMove = null;
     return this;

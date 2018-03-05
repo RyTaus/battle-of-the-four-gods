@@ -11,6 +11,19 @@ class Game {
     this.gameID = Game.generateNewId.next().value;
     // 4 players
     this.players = Object.keys(color).map(c => new Player(c));
+
+    this.connectedPlayers = 0;
+  }
+
+  connectPlayer (socket) {
+    const player = this.players[this.connectedPlayers];
+    player.assignID(socket);
+    this.connectedPlayers += 1;
+    return player;
+  }
+
+  isFull () {
+    return this.connectedPlayers >= 4;
   }
 
   getPlayer (c) {
@@ -49,23 +62,23 @@ class Game {
 Game.generateNewId = (function* () {
   let index = 0;
   while (true) {
-    index += 1;
     yield index;
+    index += 1;
   }
 }());
 
-const g = new Game();
-
-g.getPlayer('red').setMove([{ action: 'attack', color: 'orange' }, { action: 'attack', color: 'green' }]);
-g.getPlayer('blue').setMove([{ action: 'attack', color: 'orange' }]);
-g.getPlayer('green').setMove([{ action: 'defend', color: 'red' }]);
-g.getPlayer('orange').setMove([{ action: 'attack', color: 'blue' }]);
-
-console.log(g);
-// console.log(g.getPlayer(color.green));
-g.evaluateRound();
-
-console.log(g);
+// const g = new Game();
+//
+// g.getPlayer('red').setMove([{ action: 'attack', color: 'orange' }, { action: 'attack', color: 'green' }]);
+// g.getPlayer('blue').setMove([{ action: 'attack', color: 'orange' }]);
+// g.getPlayer('green').setMove([{ action: 'defend', color: 'red' }]);
+// g.getPlayer('orange').setMove([{ action: 'attack', color: 'blue' }]);
+//
+// console.log(g);
+// // console.log(g.getPlayer(color.green));
+// g.evaluateRound();
+//
+// console.log(g);
 
 
 module.exports = Game;
