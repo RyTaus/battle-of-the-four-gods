@@ -59,26 +59,15 @@ class Game {
   }
 }
 
-Game.generateNewId = (function* () {
+function* idGenerator () {
   let index = 0;
   while (true) {
     yield index;
     index += 1;
   }
-}());
+}
 
-// const g = new Game();
-//
-// g.getPlayer('red').setMove([{ action: 'attack', color: 'orange' }, { action: 'attack', color: 'green' }]);
-// g.getPlayer('blue').setMove([{ action: 'attack', color: 'orange' }]);
-// g.getPlayer('green').setMove([{ action: 'defend', color: 'red' }]);
-// g.getPlayer('orange').setMove([{ action: 'attack', color: 'blue' }]);
-//
-// console.log(g);
-// // console.log(g.getPlayer(color.green));
-// g.evaluateRound();
-//
-// console.log(g);
+Game.generateNewId = idGenerator();
 
 
 module.exports = Game;

@@ -1,0 +1,33 @@
+.action {
+  width: 40px;
+  height: 40px;
+  margin: 4px;
+  padding: 4px;
+  opacity: .4;
+  border: 4px solid black;
+  border-style: ridge;
+}
+
+.action:hover {
+  border-style: solid;
+}
+
+.selected {
+  opacity: 1;
+}
+
+.red {
+  background-color: red;
+}
+
+.blue {
+  background-color: blue;
+}
+
+.green {
+  background-color: green;
+}
+
+.orange {
+  background-color: orange;
+}
