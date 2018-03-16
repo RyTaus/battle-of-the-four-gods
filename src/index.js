@@ -36,9 +36,9 @@ io.on('connection', (socket) => {
     io.to(socket.id).emit('assign-player', game.connectPlayer(socket));
   }
 
-  socket.on('submit-moves', ({ moves, playerColor }) => {
-    console.log(moves);
-    if (socket.game.setMove(playerColor, moves).allMovesSet) {
+  socket.on('submit-move', ({ move, playerColor }) => {
+    console.log(move);
+    if (socket.game.setMove(playerColor, move).allMovesSet) {
       socket.game.evaluateRound();
       sendToGame(socket.game, 'update', game);
     }

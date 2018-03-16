@@ -25,8 +25,13 @@ class Game {
   }
 
   update (gameData) {
+    this.selectedActions = [];
     this.game = gameData;
     this.render();
+  }
+
+  submitMove () {
+    socket.emit('submit-move', { playerColor: this.player.color, move: this.selectedActions });
   }
 
   toggleAction (action) {
@@ -63,6 +68,12 @@ class Game {
       .text(d => `Energy: ${d.energy}`)
       .attr('class', d => d.color)
       .classed('life', true);
+
+    wrapper.append('button')
+      .text('submit')
+      .on('click', () => {
+        this.submitMove();
+      });
   }
 }
 
