@@ -23,12 +23,24 @@ games[game.gameID] = game;
 
 /* Socket */
 
-io.on('connection', (socket) => {
-  if (!game.isFull()) {
-    io.to(socket.id).emit('assignPlayer', game.connectPlayer(socket));
-  }
-});
+const sendToGame = (g, message, data) => {
+  g.players.forEach((player) => {
+    io.to(player.id).emit(message, data);
+  });
+};
 
-io.on('test', (data) => {
-  console.log(data);
+io.on('connection', (socket) => {
+  socket.game = game;
+
+  if (!game.isFull()) {
+    io.to(socket.id).emit('assign-player', game.connectPlayer(socket));
+  }
+
+  socket.on('submit-moves', ({ moves, playerColor }) => {
+    console.log(moves);
+    if (socket.game.setMove(playerColor, moves).allMovesSet) {
+      socket.game.evaluateRound();
+      sendToGame(socket.game, 'update', game);
+    }
+  });
 });

@@ -16,6 +16,11 @@
   opacity: 1;
 }
 
+.life {
+  margin: 4px;
+  padding: 4px;
+}
+
 .red {
   background-color: red;
 }

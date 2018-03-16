@@ -4,9 +4,10 @@ const socket = io();
 // wrapper.
 
 class Game {
-  initialize (player) {
+  initialize (data) {
     console.log('initializing...');
-    this.player = player;
+    this.game = data.game;
+    this.player = data.player;
     this.possibleActions = [
       { action: 'attack', color: 'red' },
       { action: 'defend', color: 'red' },
@@ -16,11 +17,16 @@ class Game {
       { action: 'defend', color: 'green' },
       { action: 'attack', color: 'orange' },
       { action: 'defend', color: 'orange' },
-    ].filter(a => a.color !== player.color);
+    ].filter(a => a.color !== this.player.color);
 
     this.selectedActions = [];
 
-    this.setUpScreen();
+    this.render();
+  }
+
+  update (gameData) {
+    this.game = gameData;
+    this.render();
   }
 
   toggleAction (action) {
@@ -32,34 +38,31 @@ class Game {
     }
   }
 
-  setUpScreen () {
+  render () {
     const wrapper = d3.select('.wrapper');
     wrapper.selectAll('*').remove();
 
-    wrapper.selectAll('span')
+    wrapper.selectAll('img')
       .data(this.possibleActions)
       .enter()
-      .append('span')
       .append('img')
       .attr('src', d => `/static/${d.action}.png`)
-      // .text(d => `${d.action}: ${d.color}`)
       .attr('class', d => d.color)
       .classed('selected', d => this.selectedActions.includes(d))
       .classed('action', true)
       .on('click', (d) => {
         this.toggleAction(d);
-        console.log(this.selectedActions);
-        this.setUpScreen();
-        console.log(`${d.action}: ${d.color}`);
+        this.render();
       });
 
     wrapper.selectAll('#player-hp')
-      .data([this.player.energy])
+      .data(this.game.players)
       .enter()
       .append('div')
       .attr('id', 'player-hp')
-      .text(d => `ENERGY: ${d}`)
-      .attr('id', 'player-hp');
+      .text(d => `Energy: ${d.energy}`)
+      .attr('class', d => d.color)
+      .classed('life', true);
   }
 }
 
@@ -68,6 +71,10 @@ Game.MAX_ACTIONS = 3;
 const game = new Game();
 
 
-socket.on('assignPlayer', (playerData) => {
-  game.initialize(playerData);
+socket.on('assign-player', (data) => {
+  game.initialize(data);
+});
+
+socket.on('update', (data) => {
+  game.update(data);
 });

@@ -4,6 +4,7 @@ class Player {
   constructor (color) {
     this.color = color;
     this.energy = config.START_ENERGY;
+    this.currentMove = [];
   }
 
   // Move is a list of up to three (type, color) pairss
@@ -18,7 +19,7 @@ class Player {
   }
 
   newRound () {
-    this.currentMove = null;
+    this.currentMove = [];
     return this;
   }
 

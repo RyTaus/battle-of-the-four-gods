@@ -13,21 +13,32 @@ class Game {
     this.players = Object.keys(color).map(c => new Player(c));
 
     this.connectedPlayers = 0;
+    this.movesSet = new Set([]);
   }
 
   connectPlayer (socket) {
     const player = this.players[this.connectedPlayers];
     player.assignID(socket);
     this.connectedPlayers += 1;
-    return player;
+    return { player, game: this };
   }
 
   isFull () {
-    return this.connectedPlayers >= 4;
+    return this.connectedPlayers >= this.players.length;
   }
 
   getPlayer (c) {
     return this.players.filter(p => p.color === c)[0];
+  }
+
+  setMove (c, move) {
+    this.getPlayer(c).setMove(move);
+    this.movesSet.add(c);
+    return { allMovesSet: this.checkIfAllMovesSet() };
+  }
+
+  checkIfAllMovesSet () {
+    return (this.movesSet.size >= this.players.length);
   }
 
   evaluateRound () {
@@ -37,6 +48,8 @@ class Game {
     this.players.forEach((player) => {
       player.newRound();
     });
+    this.movesSet = new Set([]);
+    return this;
   }
 
   evaluatePlayer (player) {
@@ -50,7 +63,7 @@ class Game {
     if (move.action === action.attack) {
       const isDefended = this.getPlayer(move.color)
         .currentMove.filter(m => m.color === actingPlayer.color && m.action === action.defend)
-        .length;
+        .length !== 0;
 
       if (!isDefended) {
         this.getPlayer(move.color).decreaseEnergy(config.ATTACK_DAMAGE);
