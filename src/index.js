@@ -31,6 +31,7 @@ const sendToGame = (g, message, data) => {
 
 io.on('connection', (socket) => {
   socket.game = game;
+  console.log(socket.game);
 
   if (!game.isFull()) {
     io.to(socket.id).emit('assign-player', game.connectPlayer(socket));
@@ -42,5 +43,11 @@ io.on('connection', (socket) => {
       socket.game.evaluateRound();
       sendToGame(socket.game, 'update', game);
     }
+  });
+
+  socket.on('disconnect', () => {
+    socket.game.disconnectPlayer(socket.color);
+    console.log(socket.game);
+    
   });
 });

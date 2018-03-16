@@ -12,19 +12,30 @@ class Game {
     // 4 players
     this.players = Object.keys(color).map(c => new Player(c));
 
-    this.connectedPlayers = 0;
+    this.neededPlayers = Object.keys(color);
+    this.connectedPlayers = [];
     this.movesSet = new Set([]);
   }
 
   connectPlayer (socket) {
-    const player = this.players[this.connectedPlayers];
-    player.assignID(socket);
-    this.connectedPlayers += 1;
-    return { player, game: this };
+    if (!this.isFull()) {
+      const newColor = this.neededPlayers.pop();
+      const player = this.getPlayer(newColor);
+      player.assignID(socket);
+      socket.color = newColor;
+      this.connectedPlayers.push(newColor);
+      return { player, game: this };
+    }
+    return null;
+  }
+
+  disconnectPlayer (c) {
+    this.connectedPlayers.splice(this.connectedPlayers.indexOf(c), 1);
+    this.neededPlayers.push(c);
   }
 
   isFull () {
-    return this.connectedPlayers >= this.players.length;
+    return this.connectedPlayers.length >= this.players.length;
   }
 
   getPlayer (c) {
@@ -38,7 +49,7 @@ class Game {
   }
 
   checkIfAllMovesSet () {
-    return (this.movesSet.size >= this.players.length);
+    return this.movesSet.size >= this.players.length;
   }
 
   evaluateRound () {

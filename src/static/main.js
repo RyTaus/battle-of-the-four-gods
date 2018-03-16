@@ -6,7 +6,6 @@ const socket = io();
 class Game {
   initialize (data) {
     console.log('initializing...');
-    this.game = data.game;
     this.player = data.player;
     this.possibleActions = [
       { action: 'attack', color: 'red' },
@@ -19,23 +18,35 @@ class Game {
       { action: 'defend', color: 'orange' },
     ].filter(a => a.color !== this.player.color);
 
-    this.selectedActions = [];
+    this.update(data.game);
 
+    this.selectedActions = [];
+    this.timeRemaining = 20;
     this.render();
   }
 
   update (gameData) {
     this.selectedActions = [];
     this.game = gameData;
+    this.timeRemaining = 20;
+    // this.timer = setInterval(() => {
+    //   this.timeRemaining -= 1;
+    //   console.log(this.timeRemaining);
+    //   if (this.timeRemaining < 0) {
+    //     this.submitMove();
+    //     clearInterval(this.timer);
+    //   }
+    // }, 1000);
+
     this.render();
   }
 
   submitMove () {
+    console.log(this.selectedActions);
     socket.emit('submit-move', { playerColor: this.player.color, move: this.selectedActions });
   }
 
   toggleAction (action) {
-    // console.log(action);
     if (this.selectedActions.includes(action)) {
       this.selectedActions.splice(this.selectedActions.indexOf(action), 1);
     } else if (this.selectedActions.length < Game.MAX_ACTIONS) {
@@ -45,7 +56,10 @@ class Game {
 
   render () {
     const wrapper = d3.select('.wrapper');
-    wrapper.selectAll('*').remove();
+    wrapper.selectAll('*')
+      .remove();
+
+      console.log(this);
 
     wrapper.selectAll('img')
       .data(this.possibleActions)
@@ -78,6 +92,8 @@ class Game {
 }
 
 Game.MAX_ACTIONS = 3;
+Game.TIME_PER_ROUND = 20;
+
 
 const game = new Game();
 
