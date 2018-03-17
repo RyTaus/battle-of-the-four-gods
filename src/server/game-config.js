@@ -2,5 +2,5 @@ module.exports = {
   START_ENERGY: 40,
   ATTACK_DAMAGE: 3,
   COST_PER_ACTION: 1,
-  TIME_PER_ROUND: 5,
+  TIME_PER_ROUND: 30,
 };

@@ -75,6 +75,7 @@ class Game {
       .enter()
       .append('img')
       .attr('src', d => `/static/${d.action}.png`)
+      .classed('img-responsive', true)
       .classed(color, true)
       .classed('selected', d => this.selectedActions.includes(d))
       .classed('action', true)
