@@ -29,25 +29,40 @@ const sendToGame = (g, message, data) => {
   });
 };
 
+const parseGame = (game) => {
+  return { gameID: game.gameID, players: game.players };
+};
+
 io.on('connection', (socket) => {
   socket.game = game;
   console.log(socket.game);
 
   if (!game.isFull()) {
     io.to(socket.id).emit('assign-player', game.connectPlayer(socket));
+
+    // TODO do this stuff when a game is created.
+    if (socket.game.isFull()) {
+      socket.game.onTimerEnd(() => {
+        sendToGame(socket.game, 'query-for-moves');
+      });
+      socket.game.setOnTick(() => {
+        sendToGame(socket.game, 'update-timer', socket.game.timeRemaining);
+      });
+
+      socket.game.startTimer();
+    }
   }
 
   socket.on('submit-move', ({ move, playerColor }) => {
     console.log(move);
     if (socket.game.setMove(playerColor, move).allMovesSet) {
       socket.game.evaluateRound();
-      sendToGame(socket.game, 'update', game);
+      sendToGame(socket.game, 'update', parseGame(socket.game));
     }
   });
 
   socket.on('disconnect', () => {
     socket.game.disconnectPlayer(socket.color);
     console.log(socket.game);
-    
   });
 });

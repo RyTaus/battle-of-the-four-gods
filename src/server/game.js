@@ -15,6 +15,7 @@ class Game {
     this.neededPlayers = Object.keys(color);
     this.connectedPlayers = [];
     this.movesSet = new Set([]);
+    this.timeRemaining = config.TIME_PER_ROUND;
   }
 
   connectPlayer (socket) {
@@ -27,6 +28,14 @@ class Game {
       return { player, game: this };
     }
     return null;
+  }
+
+  onTimerEnd (fun) {
+    this.timerEndFunction = fun;
+  }
+
+  setOnTick (fun) {
+    this.onTick = fun;
   }
 
   disconnectPlayer (c) {
@@ -60,6 +69,22 @@ class Game {
       player.newRound();
     });
     this.movesSet = new Set([]);
+
+    this.timeRemaining = config.TIME_PER_ROUND;
+    this.startTimer();
+  }
+
+  startTimer () {
+    console.log('starting timer...');
+    clearInterval(this.timer);
+    this.timer = setInterval(() => {
+      this.timeRemaining -= 1;
+      this.onTick();
+      if (this.timeRemaining < 0) {
+        this.timerEndFunction();
+        clearInterval(this.timer);
+      }
+    }, 1000);
     return this;
   }
 
@@ -92,6 +117,5 @@ function* idGenerator () {
 }
 
 Game.generateNewId = idGenerator();
-
 
 module.exports = Game;

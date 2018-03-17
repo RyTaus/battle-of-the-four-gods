@@ -6,10 +6,24 @@
   opacity: .4;
   border: 4px solid black;
   border-style: outset;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .action:hover {
   border-color: rgba(0, 0, 0, 0);
+}
+
+.pi {
+  margin-top: 20px;
+}
+
+.enemy {
+  border: 2px solid black;
+}
+
+.health-box {
+  text-align: center;
 }
 
 .selected {
