@@ -3,6 +3,27 @@ const socket = io();
 
 // wrapper.
 
+const renderFooter = () => {
+  const footer = d3.select('.wrapper')
+    .append('div')
+    .classed('footer', true);
+
+  const onMuteClick = () => {
+    const sound = document.getElementById("bg");
+    console.log(sound);
+    console.log(sound.paused);
+    if (sound.paused) {
+      sound.play();
+    } else {
+      sound.pause();
+    }
+  };
+
+  footer.append('button')
+    .text('toggle sound')
+    .on('click', onMuteClick);
+}
+
 class Message {
   constructor (sender, message) {
     this.sender = sender;
@@ -32,7 +53,7 @@ class Game {
 
 
     this.selectedActions = [];
-    this.timeRemaining = 20;
+    this.timeRemaining = '--';
     this.render();
   }
 
@@ -70,12 +91,17 @@ class Game {
       str += (defended.length ? `DEFENDED ${defended.join(', ')} ` : '');
       return str;
     });
+    this.log.push(new Message('--------------------------------------- ', ''));
     logArray.forEach(log => this.log.push(new Message('game', log)));
   }
 
   submitMove () {
     console.log(this.selectedActions);
-    socket.emit('submit-move', { playerColor: this.player.color, move: this.selectedActions });
+    if (this.player.energy <= 0) {
+      socket.emit('submit-move', { playerColor: this.player.color, move: [] });
+    } else {
+      socket.emit('submit-move', { playerColor: this.player.color, move: this.selectedActions });
+    }
   }
 
   toggleAction (action) {
@@ -100,7 +126,12 @@ class Game {
       .data(this.log)
       .enter()
       .append('div')
-      .text(d => `${d.sender} : ${d.message}`);
+      .append('font')
+      .classed('sender', true)
+      .text(d => `${d.sender} `)
+      .append('font')
+      .classed('message', true)
+      .text(d => ` ${d.message}`);
   }
 
   renderEnemy (color) {
@@ -131,15 +162,18 @@ class Game {
 
   renderTime (timeRemaining) {
     const wrapper = d3.select('.wrapper');
+    this.timeRemaining = timeRemaining;
 
+    wrapper.select('.timer').selectAll('h1').remove();
     return wrapper.select('.timer')
-      .text(timeRemaining)
-      .classed('timer', true)
+      .append('h1')
+      .text(timeRemaining < 0 ? 0 : timeRemaining)
       .classed('eslint', this.isFalse);
   }
 
   render () {
     const wrapper = d3.select('.wrapper');
+    console.log(wrapper);
     wrapper.selectAll('*')
       .remove();
 
@@ -147,8 +181,6 @@ class Game {
       .classed('pdc', true)
       .classed('container', true)
       .classed('row', true);
-
-    console.log(this);
 
     this.enemies.forEach(enemy => this.renderEnemy(enemy));
 
@@ -162,22 +194,27 @@ class Game {
       .classed('col-sm-4', true);
 
     wrapper.append('button')
-      .text('submit')
-      .classed('button', true)
+      .text('submit move')
+      .classed('container submit', true)
       .on('click', () => {
         this.submitMove();
       });
 
     wrapper.append('div')
-      .classed('timer', true);
+      .classed('timer', true)
+      .append('div')
+      .classed('gray', true)
+      .text('timer');
 
-    this.renderTime('');
+    this.renderTime(this.timeRemaining);
 
 
     wrapper.append('div')
       .classed('log-container', true);
 
     this.renderLog();
+
+    renderFooter();
   }
 }
 
@@ -197,10 +234,13 @@ socket.on('query-for-moves', () => {
 });
 
 socket.on('update-timer', (timeRemaining) => {
-  console.log(timeRemaining);
   game.renderTime(timeRemaining);
 });
 
 socket.on('update', (data) => {
   game.update(data);
 });
+
+window.onload = function() {
+    document.getElementById("bg").play();
+}
