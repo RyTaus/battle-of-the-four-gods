@@ -16,6 +16,7 @@ class Game {
     this.connectedPlayers = [];
     this.movesSet = new Set([]);
     this.timeRemaining = config.TIME_PER_ROUND;
+    this.history = [];
   }
 
   connectPlayer (socket) {
@@ -62,6 +63,7 @@ class Game {
   }
 
   evaluateRound () {
+    const moves = this.players.map(player => ({ color: player.color, moves: player.currentMove }));
     this.players.forEach((player) => {
       this.evaluatePlayer(player);
     });
@@ -72,6 +74,8 @@ class Game {
 
     this.timeRemaining = config.TIME_PER_ROUND;
     this.startTimer();
+    this.history.push(moves);
+    return moves;
   }
 
   startTimer () {

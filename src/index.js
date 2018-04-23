@@ -30,7 +30,7 @@ const sendToGame = (g, message, data) => {
 };
 
 const parseGame = (game) => {
-  return { gameID: game.gameID, players: game.players };
+  return { gameID: game.gameID, players: game.players, lastMove: game.history[game.history.length - 1] };
 };
 
 io.on('connection', (socket) => {

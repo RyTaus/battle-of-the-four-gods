@@ -3,6 +3,13 @@ const socket = io();
 
 // wrapper.
 
+class Message {
+  constructor (sender, message) {
+    this.sender = sender;
+    this.message = message;
+  }
+}
+
 class Game {
   initialize (data) {
     console.log('initializing...');
@@ -19,8 +26,10 @@ class Game {
     ].filter(a => a.color !== this.player.color);
 
     this.enemies = ['red', 'blue', 'green', 'orange'].filter(c => c !== this.player.color);
+    this.log = [];
 
     this.update(data.game);
+
 
     this.selectedActions = [];
     this.timeRemaining = 20;
@@ -34,14 +43,39 @@ class Game {
   update (gameData) {
     this.selectedActions = [];
     this.game = gameData;
+    if (gameData.lastMove) {
+      this.updateLog(gameData.lastMove);
+    }
+    // this.log.push(new Message('game', gameData.lastMove ? JSON.stringify(gameData.lastMove) : ''));s
 
     this.render();
+  }
+
+  updateLog (gameData) {
+    const logArray = gameData.map((object) => {
+      let str = `${object.color} `;
+      const attacked = object.moves
+        .filter(move => move.action === 'attack')
+        .map(move => move.color);
+
+      const defended = object.moves
+        .filter(move => move.action === 'defend')
+        .map(move => move.color);
+
+      if (attacked.length + defended.length === 0) {
+        return `${str} did nothing`;
+      }
+
+      str += (attacked.length ? `ATTACKED ${attacked.join(', ')} ` : '');
+      str += (defended.length ? `DEFENDED ${defended.join(', ')} ` : '');
+      return str;
+    });
+    logArray.forEach(log => this.log.push(new Message('game', log)));
   }
 
   submitMove () {
     console.log(this.selectedActions);
     socket.emit('submit-move', { playerColor: this.player.color, move: this.selectedActions });
-
   }
 
   toggleAction (action) {
@@ -57,6 +91,16 @@ class Game {
       .text(this.getPlayer(color).energy)
       .classed(color, true)
       .classed('health-box', true);
+  }
+
+  renderLog () {
+    d3.select('.log-container')
+      .append('div')
+      .selectAll('.log')
+      .data(this.log)
+      .enter()
+      .append('div')
+      .text(d => `${d.sender} : ${d.message}`);
   }
 
   renderEnemy (color) {
@@ -128,6 +172,12 @@ class Game {
       .classed('timer', true);
 
     this.renderTime('');
+
+
+    wrapper.append('div')
+      .classed('log-container', true);
+
+    this.renderLog();
   }
 }
 
