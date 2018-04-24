@@ -4,25 +4,30 @@ const socket = io();
 // wrapper.
 
 const renderFooter = () => {
+  d3.select('.wrapper').select('.footer').remove()
   const footer = d3.select('.wrapper')
     .append('div')
+    .classed(game.player.color, true)
     .classed('footer', true);
 
+  const sound = document.getElementById('bg');
   const onMuteClick = () => {
-    const sound = document.getElementById("bg");
-    console.log(sound);
-    console.log(sound.paused);
     if (sound.paused) {
       sound.play();
     } else {
       sound.pause();
     }
+    renderFooter();
   };
 
   footer.append('button')
-    .text('toggle sound')
+    .text(!sound.paused ? '🔊' : '🔇')
     .on('click', onMuteClick);
-}
+
+  footer.append('font')
+    .text('Ⓒ RyTaus')
+    .classed('copyright', true);
+};
 
 class Message {
   constructor (sender, message) {
@@ -50,6 +55,7 @@ class Game {
     this.log = [];
 
     this.update(data.game);
+    this.currentRound = 1;
 
 
     this.selectedActions = [];
@@ -67,6 +73,7 @@ class Game {
     if (gameData.lastMove) {
       this.updateLog(gameData.lastMove);
     }
+    this.currentRound = gameData.currentRound;
     // this.log.push(new Message('game', gameData.lastMove ? JSON.stringify(gameData.lastMove) : ''));s
 
     this.render();
@@ -91,12 +98,11 @@ class Game {
       str += (defended.length ? `DEFENDED ${defended.join(', ')} ` : '');
       return str;
     });
-    this.log.push(new Message('--------------------------------------- ', ''));
-    logArray.forEach(log => this.log.push(new Message('game', log)));
+    logArray.forEach(log => this.log.unshift(new Message('game', log)));
+    this.log.unshift(new Message(`... Round ${this.currentRound} ................`, ''));
   }
 
   submitMove () {
-    console.log(this.selectedActions);
     if (this.player.energy <= 0) {
       socket.emit('submit-move', { playerColor: this.player.color, move: [] });
     } else {
@@ -241,6 +247,6 @@ socket.on('update', (data) => {
   game.update(data);
 });
 
-window.onload = function() {
-    document.getElementById("bg").play();
-}
+// window.onload = function() {
+//     document.getElementById('bg').play();
+// }

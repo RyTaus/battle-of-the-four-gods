@@ -16,6 +16,7 @@ class Game {
     this.connectedPlayers = [];
     this.movesSet = new Set([]);
     this.timeRemaining = config.TIME_PER_ROUND;
+    this.round = 1;
     this.history = [];
   }
 
@@ -105,9 +106,8 @@ class Game {
         .currentMove.filter(m => m.color === actingPlayer.color && m.action === action.defend)
         .length !== 0;
 
-      if (!isDefended) {
-        this.getPlayer(move.color).decreaseEnergy(config.ATTACK_DAMAGE);
-      }
+      config.performAttack(actingPlayer, this.getPlayer(move.color), isDefended);
+
     }
   }
 }

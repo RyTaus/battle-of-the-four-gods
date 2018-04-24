@@ -30,7 +30,12 @@ const sendToGame = (g, message, data) => {
 };
 
 const parseGame = (game) => {
-  return { gameID: game.gameID, players: game.players, lastMove: game.history[game.history.length - 1] };
+  return {
+    gameID: game.gameID,
+    players: game.players,
+    lastMove: game.history[game.history.length - 1],
+    currentRound: game.round,
+  };
 };
 
 io.on('connection', (socket) => {
@@ -43,6 +48,7 @@ io.on('connection', (socket) => {
     // TODO do this stuff when a game is created.
     if (socket.game.isFull()) {
       socket.game.onTimerEnd(() => {
+        socket.game.round += 1;
         sendToGame(socket.game, 'query-for-moves');
       });
       socket.game.setOnTick(() => {
