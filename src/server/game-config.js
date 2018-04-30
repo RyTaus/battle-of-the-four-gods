@@ -1,4 +1,4 @@
-const TIME_PER_ROUND = 5;
+const TIME_PER_ROUND =  25;
 
 const START_ENERGY = 45;
 const ATTACK_DAMAGE = 3;
